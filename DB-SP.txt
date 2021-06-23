@@ -1,0 +1,138 @@
+create procedure DeleteProduct 
+(
+@id int
+)
+AS
+BEGIN
+
+delete from productattribute where productId=@id
+delete from Product where productId=@id
+
+END
+CREATE Procedure GetAllProduct
+(
+ @PageNumber INT = 1,
+  @PageSize   INT = 10
+)
+AS
+BEGIN
+SELECT P.*,PC.CategoryName AS ProdCatName FROM [dbo].[Product] P 
+LEFT JOIN [dbo].[ProductCategory] PC ON PC.ProdCatId = P.ProdCatId ORDER BY P.[ProductId]
+ OFFSET @PageSize * (@PageNumber - 1) ROWS
+ FETCH NEXT @PageSize ROWS ONLY
+END
+
+GO
+
+Create Procedure GetProductAttributes 
+(
+@ProductId int
+)
+AS
+BEGIN
+SELECT * FROM [dbo].[ProductAttribute] WHere [ProductId] = @ProductId
+END
+
+GO
+CREATE Procedure usp_SaveProduct 
+(
+@ProductCatId int,
+@ProductName Varchar(100),
+@ProductDesc Varchar(100),
+@ProductId int output
+)
+AS
+BEGIN
+ INSERT INTO [dbo].[Product]
+ (
+  ProdCatId
+ ,ProdName
+ ,ProdDescription
+ )
+ VALUES
+ (
+  @ProductCatId
+ ,@ProductName
+ ,@ProductDesc
+
+ )
+ SET @ProductId =  @@Identity 
+END
+
+GO
+CREATE Procedure usp_SaveProductAttribute
+(
+@AttributeId int,
+@AttributeValue Varchar(100),
+@ProductId int 
+)
+AS
+BEGIN
+ INSERT INTO [dbo].[ProductAttribute]
+ (
+  ProductId
+,AttributeId
+,AttributeValue
+ )
+ VALUES
+ (
+  @ProductId
+ ,@AttributeId
+ ,@AttributeValue
+
+ )
+END
+
+GO
+Create Procedure usp_RemoveAttribute 
+(
+@ProductId int,
+@AttributeId int 
+)
+AS
+BEGIN
+DELETE  FROM [dbo].[ProductAttribute] WHere [ProductId] = @ProductId AND AttributeId =@AttributeId
+END
+
+GO
+
+CREATE Procedure usp_UpdateProduct 
+(
+@ProductCatId int,
+@ProductName Varchar(100),
+@ProductDesc Varchar(100),
+@ProductId int 
+)
+AS
+BEGIN
+ Update [dbo].[Product]
+ SET
+  ProdCatId =@ProductCatId
+ ,ProdName =@ProductName
+ ,ProdDescription=@ProductDesc
+
+WHERE [ProductId] =@ProductId
+ 
+END
+
+GO
+
+Create Procedure GetProductCategories
+AS
+BEGIN
+SELECT * FROM [dbo].[ProductCategory]
+END
+
+GO
+Create Procedure GetProductAttributeLookup
+(
+@ProdCatId int
+)
+AS
+BEGIN
+SELECT * FROM [dbo].[ProductAttributeLookup] WHERE [ProdCatId] = @ProdCatId
+END
+
+GO
+
+
